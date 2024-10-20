@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <title>Slide 模板</title>
+    <title>Shortest Path Algorithm with Heaps</title>
     <link rel="shortcut icon" href="./favicon.ico" />
     <link rel="stylesheet" href="./dist/reset.css" />
     <link rel="stylesheet" href="./dist/reveal.css" />
@@ -25,11 +25,11 @@
 <div class="middle center">
 <div style="width: 100%">
 
-# Slide 模版
+# Shortest Path Algorithm with Heaps
 
 <hr/>
 
-By [@TonyCrane](https://github.com/TonyCrane)
+By Group 5
 
 
 
@@ -41,9 +41,9 @@ By [@TonyCrane](https://github.com/TonyCrane)
 <div class="middle center">
 <div style="width: 100%">
 
-# Part.1 大标题
+# Part.1 斐波那契堆
 
-一些 markdown
+斐波那契堆的定义、操作
 
 </div>
 </div>
@@ -51,114 +51,123 @@ By [@TonyCrane](https://github.com/TonyCrane)
 
 <!--v-->
 
-## 标题
+## 定义
 
-> test
+斐波那契堆（Fibonacci heap）是计算机科学中树的集合。它比二项堆具有更好的平摊分析性能，可用于实现合并优先队列。为了实现高性能，斐波那契堆相较于二项堆做出了如下妥协：
+
+- 每个非根节点最多只能失去一个子节点。
+- 如果一个非根节点失去两个子节点，则将其从父节点中切除。这种切割可能会触发更多的切割操作。
+- 标记那些失去过子节点的节点，以跟踪哪些节点已经失去了子节点。
 
 <hr/>
 
-```rust [1|2-3]
-fn main() {
-    println!("Hello World!")
-}
-```
 
-...
-
-- list 1
-- list 2
-    - list 2.1
-
-1. 有序
 
 <!--v-->
 
-## 标题
+## 实现
 
-<div class="three-line">
+斐波那契堆是一系列具有最小堆序的有根树的集合。我们将树存储在循环双向链表中，称之为根链表。每个节点的子节点也存在循环双向链表中，便于操作。
 
-|表头 a|表头 b|表头 c|
-|:--:|:--:|:--:|
-|这是一个|一些内容|...|
-|三线表|...|...|
+<center>
 
-</div>
+![alt text](./image2.png)
 
-|表头 a|表头 b|表头 c|
-|:--:|:--:|:--:|
-|这是一个|一些内容|...|
-|普通表格|...|...|
+</center>
+
+
+<!--v-->
+## 操作
+|GetMin|Insert|ExtractMin|DecreaseKey|
+|:--:|:--:|:--:|:--:|
+|$O(1)$|$O(1)$|$O(\log n)$|$O(1)$|
+
+1. GetMin: 我们总是维护了一个指针指向斐波那契堆的最小值，读取最小值的时候只要读取该指针即可。
+2. Insert: 因为为了节省时间，我们只是简单地将新节点插入到根链表中，不需要进行任何其他操作。
+3. 剩下两个操作我们对其进行摊还分析。
+
+<!--v-->
+## ExtractMin
+- The amortized cost of an extract-min is
+O(M(n)), where M(n) is the maximum
+possible order of a tree.
+    - If we never do any decrease-keys, then the trees in our data structure are all binomial trees. Each tree of order k has 2k nodes in it, the
+maximum possible order is O(log n).
+    - In a tree of order k, there are at least $ F_{k+2} ≥ \phi{k} $ nodes. Therefore, the maximum order of a tree in our data structure is $ \log_{\phi}{n} = O(\log n) $.
+
+<!--v-->
+## DecreaseKey
+定义势能函数
+
+$$ \Phi = trees + 2 \times marked $$
+
+- 标记了一个新节点（势能增加 $+2$），
+- 取消标记了 $C$ 个节点（势能减少 $-2C$），
+- 将 $C$ 个树添加到根列表（势能增加 $+C$）。
+
+势能变化 $\Delta \Phi$ 为：
+
+$$\Delta \Phi = 2 - 2C + C = 2 - C$$
+<!--v-->
+## DecreaseKey
+因此，摊还成本计算如下：
+
+$$ 摊还成本 = \Theta(C) + O(1) \cdot \Delta \Phi $$
+
+$$= \Theta(C) + O(1) \cdot (2 - C)$$
+
+$$= \Theta(C) - O(C) + O(1)$$
+
+$$= \Theta(1)$$
+
+decrease-key操作的摊还时间复杂度为 $O(1)$。
 
 <!--s-->
 
 <div class="middle center">
 <div style="width: 100%">
 
-# Part.2 布局
-
+# Part.2 Dijkstra算法
+基于斐波那契堆和二项堆的 Dijkstra 算法
 </div>
 </div>
 
 <!--v-->
 
-## 多列布局
+## 斐波那契堆
 
-<div class="mul-cols">
-<div class="col">
+使用斐波那契堆实现 Dijkstra 算法时，每个操作的复杂度如下：
+- enqueue：$O(1)$ 摊还时间复杂度
+- extract-min：$O(\log n)$ 摊还时间复杂度
+- decrease-key：$O(1)$ 摊还时间复杂度
 
-第一列
+Dijkstra 算法在运行过程中会进行 $n$ 次 enqueue 和 extract-min 操作，以及 $m$ 次 decrease-key 操作，其中 $n$ 为节点数，$m$ 为边数。因此，基于斐波那契堆的 Dijkstra 算法的总时间复杂度为：
+$$
+O(n \cdot T_{\text{enq}} + n \cdot T_{\text{ext}} + m \cdot T_{\text{dec}}) = O(n \log n + m).
+$$
+这种实现对于图的最短路径问题来说是最优的，尤其是对于稠密图。
 
-- list
-- list
+<!--v-->
 
-</div>
-<div class="col">
+## 二项堆
+二项堆的操作复杂度与斐波那契堆相比稍有劣势，特别是在 decrease-key 操作上。二项堆的各项操作复杂度如下：
+- enqueue：$O(1)$
+- extract-min：$O(\log n)$
+- decrease-key：$O(\log n)$
 
-第二列
 
-```python
-class MyClass:
-    def __init__(self, ...):
-        ...
-    def method(self, ...):
-        ...
-```
+基于二项堆的 Dijkstra 算法的总时间复杂度为：
+$$
+O(n \cdot T_{\text{enq}} + n \cdot T_{\text{ext}} + m \cdot T_{\text{dec}}) = O((n + m) \log n).
+$$
+与斐波那契堆相比，二项堆在处理较多 decrease-key 操作时的效率稍差，因此在图的最短路径问题上不如斐波那契堆高效。
 
-</div>
-</div>
+<!--s-->
 
-<div class="mul-cols">
-<div class="col">
+<div class="middle center">
+<div style="width: 100%">
 
-第一列
-
-- list
-- list
-
-</div>
-<div class="col">
-
-第二列
-
-1. list 
-2. list 
-    - list
-
-</div>
-<div class="col">
-
-第三列
-
-```python
-class MyClass:
-    def __init__(self, ...):
-        ...
-    def method(self, ...):
-        ...
-```
-
-</div>
-</div>
+# 谢谢！
           </textarea>
         </section>
       </div>
