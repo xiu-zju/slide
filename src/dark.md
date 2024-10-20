@@ -82,11 +82,11 @@ By Group 5
 <!--v-->
 ## ExtractMin
 - The amortized cost of an extract-min is
-O(M(n)), where M(n) is the maximum
+$O(M(n))$, where $M(n)$ is the maximum
 possible order of a tree.
     - If we never do any decrease-keys, then the trees in our data structure are all binomial trees. Each tree of order k has 2k nodes in it, the
-maximum possible order is O(log n).
-    - In a tree of order k, there are at least $ F_{k+2} ≥ \phi{k} $ nodes. Therefore, the maximum order of a tree in our data structure is $ \log_{\phi}{n} = O(\log n) $.
+maximum possible order is $O(\log n)$.
+    - In a tree of order k, there are at least $ F_{k+2} ≥ \phi_{k} $ nodes. Therefore, the maximum order of a tree in our data structure is $ \log_{\phi}{n} = O(\log n) $.
 
 <!--v-->
 ## DecreaseKey
@@ -105,7 +105,7 @@ $$\Delta \Phi = 2 - 2C + C = 2 - C$$
 ## DecreaseKey
 因此，摊还成本计算如下：
 
-$$ 摊还成本 = \Theta(C) + O(1) \cdot \Delta \Phi $$
+$$  摊还成本 = \Theta(C) + O(1) \cdot \Delta \Phi $$
 
 $$= \Theta(C) + O(1) \cdot (2 - C)$$
 
