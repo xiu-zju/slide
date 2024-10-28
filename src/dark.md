@@ -89,6 +89,33 @@ maximum possible order is $O(\log n)$.
     - In a tree of order k, there are at least $ F_{k+2} ≥ \phi_{k} $ nodes. Therefore, the maximum order of a tree in our data structure is $ \log_{\phi}{n} = O(\log n) $.
 
 <!--v-->
+## DecreaseKey（错误示范）
+定义势能函数
+
+$$ \Phi = trees + marked $$
+
+- 标记了一个新节点（势能增加 $+1$），
+- 取消标记了 $C$ 个节点（势能减少 $-1C$），
+- 将 $C$ 个树添加到根列表（势能增加 $+C$）。
+
+势能变化 $\Delta \Phi$ 为：
+
+$$\Delta \Phi = 1 - C + C = 1$$
+<!--v-->
+## DecreaseKey
+因此，摊还成本计算如下：
+
+$$= \Theta(C) + O(1) \cdot \Delta \Phi $$
+
+$$= \Theta(C) + O(1) \cdot 1$$
+
+$$= \Theta(C) + O(1)$$
+
+$$= \Theta(C)$$
+
+Hmmm...that didn't work.
+
+<!--v-->
 ## DecreaseKey
 定义势能函数
 
