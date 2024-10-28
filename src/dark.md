@@ -101,8 +101,9 @@ $$ \Phi = trees + marked $$
 势能变化 $\Delta \Phi$ 为：
 
 $$\Delta \Phi = 1 - C + C = 1$$
+
 <!--v-->
-## DecreaseKey
+## DecreaseKey（错误示范）
 因此，摊还成本计算如下：
 
 $$= \Theta(C) + O(1) \cdot \Delta \Phi $$
