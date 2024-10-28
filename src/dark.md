@@ -214,7 +214,7 @@ $$
 
 ## 图表
 
-![alt text](./result.png)
+![alt text](./result1.png)
 
 <!--v-->
 
