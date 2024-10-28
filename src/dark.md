@@ -95,7 +95,7 @@ maximum possible order is $O(\log n)$.
 $$ \Phi = trees + marked $$
 
 - 标记了一个新节点（势能增加 $+1$），
-- 取消标记了 $C$ 个节点（势能减少 $-1C$），
+- 取消标记了 $C$ 个节点（势能减少 $-C$），
 - 将 $C$ 个树添加到根列表（势能增加 $+C$）。
 
 势能变化 $\Delta \Phi$ 为：
