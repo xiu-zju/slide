@@ -25,11 +25,11 @@
 <div class="middle center">
 <div style="width: 100%">
 
-# Shortest Path Algorithm with Heaps
+# 音乐在频域上的可视化
 
 <hr/>
 
-By Group 5
+By [胥涵坤](https://xiu-zju.me)
 
 
 
@@ -41,9 +41,9 @@ By Group 5
 <div class="middle center">
 <div style="width: 100%">
 
-# Part.1 斐波那契堆
+# Part.0 引入
 
-斐波那契堆的定义、操作
+
 
 </div>
 </div>
@@ -51,186 +51,179 @@ By Group 5
 
 <!--v-->
 
-## 定义
-
-斐波那契堆（Fibonacci heap）是计算机科学中树的集合。它比二项堆具有更好的平摊分析性能，可用于实现合并优先队列。为了实现高性能，斐波那契堆相较于二项堆做出了如下妥协：
-
-- 每个非根节点最多只能失去一个子节点。
-- 如果一个非根节点失去两个子节点，则将其从父节点中切除。这种切割可能会触发更多的切割操作。
-- 标记那些失去过子节点的节点，以跟踪哪些节点已经失去了子节点。
-
-<hr/>
-
-
-
-<!--v-->
-
-## 实现
-
-斐波那契堆是一系列具有最小堆序的有根树的集合。我们将树存储在循环双向链表中，称之为根链表。每个节点的子节点也存在循环双向链表中，便于操作。
+## 效果图
+你能看出来这是什么歌吗？
 
 <center>
 
-![alt text](./image2.png)
+<img src="1.gif" alt="描述" width="700" height="400">
 
 </center>
 
+~~（当然你不可能看得出来~~
+
+<hr/>
+
+
 
 <!--v-->
-## 操作
-|GetMin|Insert|ExtractMin|DecreaseKey|
-|:--:|:--:|:--:|:--:|
-|$O(1)$|$O(1)$|$O(\log n)$|$O(1)$|
 
-1. GetMin: 我们总是维护了一个指针指向斐波那契堆的最小值，读取最小值的时候只要读取该指针即可。
-2. Insert: 因为为了节省时间，我们只是简单地将新节点插入到根链表中，不需要进行任何其他操作。
-3. 剩下两个操作我们对其进行摊还分析。
+## 我怎么想到这个主题的
+~~万恶的短学期课程（划掉~~
+<center>
+<img src="2.gif" alt="描述" width="700" height="350">
+</center>
 
-<!--v-->
-## ExtractMin
-- The amortized cost of an extract-min is
-$O(M(n))$, where $M(n)$ is the maximum
-possible order of a tree.
-    - If we never do any decrease-keys, then the trees in our data structure are all binomial trees. Each tree of order k has 2k nodes in it, the
-maximum possible order is $O(\log n)$.
-    - In a tree of order k, there are at least $ F_{k+2} ≥ \phi_{k} $ nodes. Therefore, the maximum order of a tree in our data structure is $ \log_{\phi}{n} = O(\log n) $.
-
-<!--v-->
-## DecreaseKey（错误示范）
-定义势能函数
-
-$$ \Phi = trees + marked $$
-
-- 标记了一个新节点（势能增加 $+1$），
-- 取消标记了 $C$ 个节点（势能减少 $-C$），
-- 将 $C$ 个树添加到根列表（势能增加 $+C$）。
-
-势能变化 $\Delta \Phi$ 为：
-
-$$\Delta \Phi = 1 - C + C = 1$$
-
-<!--v-->
-## DecreaseKey（错误示范）
-因此，摊还成本计算如下：
-
-$$= \Theta(C) + O(1) \cdot \Delta \Phi $$
-
-$$= \Theta(C) + O(1) \cdot 1$$
-
-$$= \Theta(C) + O(1)$$
-
-$$= \Theta(C)$$
-
-Hmmm...that didn't work.
-
-<!--v-->
-## DecreaseKey
-定义势能函数
-
-$$ \Phi = trees + 2 \times marked $$
-
-- 标记了一个新节点（势能增加 $+2$），
-- 取消标记了 $C$ 个节点（势能减少 $-2C$），
-- 将 $C$ 个树添加到根列表（势能增加 $+C$）。
-
-势能变化 $\Delta \Phi$ 为：
-
-$$\Delta \Phi = 2 - 2C + C = 2 - C$$
-<!--v-->
-## DecreaseKey
-因此，摊还成本计算如下：
-
-$$= \Theta(C) + O(1) \cdot \Delta \Phi $$
-
-$$= \Theta(C) + O(1) \cdot (2 - C)$$
-
-$$= \Theta(C) - O(C) + O(1)$$
-
-$$= \Theta(1)$$
-
-decrease-key操作的摊还时间复杂度为 $O(1)$。
 
 <!--s-->
 
 <div class="middle center">
 <div style="width: 100%">
 
-# Part.2 Dijkstra算法
-基于斐波那契堆和二项堆的 Dijkstra 算法
+# Part.1 原理讲解
+
 </div>
 </div>
 
 <!--v-->
 
-## 斐波那契堆
+## 从正弦波到方波
 
-使用斐波那契堆实现 Dijkstra 算法时，每个操作的复杂度如下：
-- enqueue：$O(1)$ 摊还时间复杂度
-- extract-min：$O(\log n)$ 摊还时间复杂度
-- decrease-key：$O(1)$ 摊还时间复杂度
-
-Dijkstra 算法在运行过程中会进行 $n$ 次 enqueue 和 extract-min 操作，以及 $m$ 次 decrease-key 操作，其中 $n$ 为节点数，$m$ 为边数。因此，基于斐波那契堆的 Dijkstra 算法的总时间复杂度为：
-$$
-O(n \cdot T_{\text{enq}} + n \cdot T_{\text{ext}} + m \cdot T_{\text{dec}}) = O(n \log n + m).
-$$
-这种实现对于图的最短路径问题来说是最优的，尤其是对于稠密图。
-
-<!--v-->
-
-## 二项堆
-二项堆的操作复杂度与斐波那契堆相比稍有劣势，特别是在 decrease-key 操作上。二项堆的各项操作复杂度如下：
-- enqueue：$O(1)$
-- extract-min：$O(\log n)$
-- decrease-key：$O(\log n)$
-
-
-基于二项堆的 Dijkstra 算法的总时间复杂度为：
-$$
-O(n \cdot T_{\text{enq}} + n \cdot T_{\text{ext}} + m \cdot T_{\text{dec}}) = O((n + m) \log n).
-$$
-与斐波那契堆相比，二项堆在处理较多 decrease-key 操作时的效率稍差，因此在图的最短路径问题上不如斐波那契堆高效。
-
-<!--s-->
-
-<div class="middle center">
-<div style="width: 100%">
-
-# Part.4 数据处理
-
-<!--v-->
-
-## 本地运行数据
-
-| 数据集 | Size | 斐波那契堆（秒） | 二项堆（秒） |
-|--------|------|-----------------|-------------|
-| NY     | 264346, 733846| 0.82658 | 0.44519 |
-| BAY    | 321270, 800172| 0.83898 | 0.47932 |
-| COL    | 435666, 1057066| 1.21967 | 0.71303 |
-| FLA    | 1070376, 2712798| 2.05296 | 1.33634 |
-| NE     | 1524453, 3897636| 3.23071 | 2.29018 |
-| CAL    | 1890815, 4657742| 5.11268 | 3.94559 |
-| E      | 3598623, 8778114| 9.34682 | 7.78993 |
-| CTR    | 14081816, 34292496| 46.83178 | 56.11363 |
-| USA    | 23947347, 58333344| 77.77597 | 85.77322 |
+正弦波大家都见过，就是$\sin$，$\cos$，这里统称正弦波。那么有没有想过，方波是什么样子的？如果你学过傅里叶变换，那么下意识的反应，方波是频率不同的正弦波的叠加。但是你要没有学过也没有关系，简单的来说，不同的正弦波(有不同的频率，不同的幅度，不同的相位，正弦波的三要素)可以组合出来方波。
 
 <center>
-不同数据结构的 Dijkstra 算法对不同数据集的性能对比
+<img src="Fourier_transform.gif" alt="描述" width="600" height="300">
 </center>
 
 <!--v-->
 
-## 图表
+## 任意信号的分解
 
-![alt text](./result1.png)
+看过了上面的方波例子，信号其实可以被分解为频率不同的正弦波的叠加。然后将频率看作一个轴(将$f$看作$x$轴)，不同的频率的正弦波信号所占总信号的比例就用垂直于频率轴的一个轴可以进行表示(将他看作$y$轴)。这样我们就有了平时在音乐播放器中所看见的频谱。而这个频谱就是我们要可视化的东西。
+
+<center>
+<img src="images.jpg" alt="描述" width="500" height="250">
+</center>
+
+<!--v-->
+## 时域信号变频域信号
+音频通常以时间为自变量表示，即$y=f(t)$，其中$t$表示时间，$y$表示该时刻的音量强度，这就是时域信号。相对地，频域信号表示为$z=g(f)$，其中$f$是频率，$z$表示某频率的信号成分大小，也可以理解为该信号与对应频率的正弦波相似度。相似度越高，表明该频率成分越强。
+
+如何将$f(t)$变成$g(f)$呢？这里用到的是就是傅里叶变换。
+
+<center>
+<img src="sa1jpkljil.gif" alt="描述" width="500" height="250">
+
+</center>
+
+<!--v-->
+## 如何用计算机实现
+计算机是二进制的，所以计算机只能处理离散的数据，所以将我们上面的东西迁移一下:我们的频域信号，也就是我们所要可视化的东西，变成了一串数据。此时下标代表的其实是频率。那么将时域变成频域的函数，就变成了fft(快速傅里叶变换)。
+<center>
+<img src="discrete.jpg" alt="描述" width="500" height="250">
+
+离散数据
+
+</center>
 
 <!--v-->
 
-## 结论
+<div class="middle center">
+<div style="width: 100%">
 
-通过测试结果，我们可以得出以下结论：    
-- 对于较小数据集，由于二项堆的实现简单，操作常数开销较小，二项堆的性能优于斐波那契堆。
-- 对于较大数据集，由于斐波那契堆实现复杂，操作常数开销较大，在实践中，只有在处理大量数据输入时才能体现出斐波那契堆的优势。
-- 由于实际应用中往往都是处理大数据为主，因此尽管斐波那契堆的实现复杂，它在实际应用中更具优势。
+# 理论存在，实践开始！
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# Part.2 具体实现
+
+
+<!--v-->
+
+## 问题分解
+
+这次要实现的东西主要实现音频播放时进行实时计算，然后将实时频域的图像绘制出来。对应此次任务就可以分解为三个部分，
+
+1. 将音频播放出来，并可以实时读取播放的音频时域数据
+2. 将拿到数据进行实时fft
+3. 将fft的数据绘制出来
+
+
+语言选择：
+Python （伟大！
+
+<center>
+<img src="download.png" alt="描述" width="200" height="200">
+</center>
+
+
+
+<!--v-->
+
+## 任务一
+```python
+#音频流回调函数，会在音频chunk播放完后调用
+def callback(indata, outdata, frames, time, status):
+    frames = chunk_size #每次给流内推入chunk_size个数据
+    global sound_chunk_idx
+    #下面的if语句用来判断最后的音频不够chunk_size个值，防止程序出错
+    if (music_data[chunk_size*sound_chunk_idx:chunk_size*(sound_chunk_idx+1), 0].size < chunk_size):
+        raise sd.CallbackStop()
+        return
+    #推入流
+    outdata[:] = music_data[chunk_size*sound_chunk_idx:chunk_size*(sound_chunk_idx+1), :]
+    sound_chunk_idx += 1;
+    #改变buffer, 生成动画
+    buffer[:] = np.abs(fft(outdata[0:1024, 0]))[:512:8]
+```
+这里使用sounddevice这个库，通过Stream的方式进行播放，拿到实时的音频数据。你可以将音频想象成水，然后喇叭在河的下游，然后你将水(音频流)不断倒到河道中就可以让喇叭发出声音。
+
+<!--v-->
+
+## 任务二
+
+这步比较简单，就是将时域数据通过fft变成频域数据。你会看到，这里有个buffer变量，它是一个全局变量，保存频域的实时数据，给后面绘图用。接下来，用到abs函数，这是因为数据转换后是复数，我们需要用abs取复数的模值，这样就能得到对应的能量大小。
+
+```python
+buffer[:] = np.abs(fft(outdata[0:1024, 0]))[:512:8]
+```
+
+<center>
+<img src="fft.jpg" alt="描述" width="500" height="250">
+</center>
+
+<!--v-->
+## 任务三
+
+绘图。使用了matplotlib这个绘图库。基本思路是让matplotlib调用函数不断绘图，绘图的依据就是前面提到过buffer，通过播放时不断更新buffer中的值就可以变成实时频谱图了。
+
+```python
+fig, ax = plt.subplots(figsize=(18,9)) #画图的对象
+ax.axis('off') #关闭坐标轴和边框
+#初始化函数，第一帧
+def init():
+    ax.set_xlim(1, 65) #横轴的标
+    ax.set_ylim(0, 3000000) #纵轴的坐标
+    return ax.stem(buffer, buffer)
+#更新函数，会在动画的每一帧调用
+def update(frame):
+    xdata = np.arange(1, 65) #共有65个数据点
+    ydata = buffer #通过callback函数来改变buffer的值，然后让频谱动起来
+    b_c = ax.stem(xdata, ydata, linefmt='--', markerfmt=None) #这里这里stem图
+    return b_c #必须有
+ani = FuncAnimation(fig, update, init_func=init, interval=20, blit=True)
+plt.show(block=False)
+```
+
+<!--s-->
+
+<div class="middle center">
+<div style="width: 100%">
+
+# 最终效果
+全体欣赏音乐！！！
 
 <!--s-->
 
@@ -238,6 +231,9 @@ $$
 <div style="width: 100%">
 
 # 谢谢！
+<hr/>
+
+By [胥涵坤](https://xiu-zju.me)
           </textarea>
         </section>
       </div>
